@@ -6,11 +6,13 @@
 
 class Paddle : public Block{
 private:
-	int num_blocks;
+	//ADD THREE INVISIBLE BLOCKS
+	//FRONT 20% IS ONE BLOCK, BACK 20% IS ONE BLOCK, MIDDLE IS ONE BLOCK
+	//BALL BOUNCE NORMAL ON MIDDLE, BOUNCE DIFFERENT ON FRONT AND BACK
 
 public:
 	Paddle(int x, int y) : Block(x, y, 100, 20, FL_PLASTIC_UP_BOX, FL_BLUE){
-		this->num_blocks = 5;
+
 	}
 };
 
