@@ -3,40 +3,17 @@
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
-#include "Paddle.h"
 #include "Ball.h"
+#include "Brick.h"
+#include "Paddle.h"
+
 
 class GameWindow : public Fl_Window {
 private:
 	Ball ball = Ball(30,30);
 public:
-	static void animate(void *userdata);
-
-	bool isRunning();
-
-	GameWindow(int x, int y, int w, int h, const char* title=0) : Fl_Window(x, y, w, h, title){
-		Fl::add_timeout(0.5, animate, (void*)this);
-		this->show();
-		this->ball.setSpeed(1,0);
+	GameWindow() : Fl_Window(100, 100, 1400, 700, "Canvas"){
+		this->ball.draw();
 	}
-
 };
-
-void GameWindow::animate(void *userdata){
-	GameWindow *win = (GameWindow *)userdata;
-	while(win->isRunning()){
-		Fl::repeat_timeout(0.025, animate, userdata);
-	}
-}
-
-bool GameWindow::isRunning(){
-	if (true) {
-		this->ball.move();
-		if (!true) {
-			return false;
-		}
-	}
-	return true;
-}
-
 #endif

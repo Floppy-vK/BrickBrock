@@ -8,8 +8,12 @@ private:
 	int hitPoints;
 
 public:
-	Brick(int x, int y, Fl_Boxtype blockType, Fl_Color color, int hitPoints) : Block(x, y, blockType, color){
+	Brick(int x, int y, int hitPoints) : Block(x, y, 20, 20, FL_THIN_UP_BOX, FL_YELLOW){
 		this->hitPoints = hitPoints;
+		this->labelfont(1);
+		if (hitPoints == 3){
+			this->label("3");
+		}
 	}
 };
 

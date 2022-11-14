@@ -12,7 +12,7 @@ private:
 public:
 	void setCoords(int x, int y);
 
-	Block(int x, int y, Fl_Boxtype blockType = FL_NO_BOX, Fl_Color color = FL_WHITE): Fl_Box(x, y, 20, 20){
+	Block(int x, int y, int w, int h, Fl_Boxtype blockType = FL_NO_BOX, Fl_Color color = FL_WHITE): Fl_Box(x, y, w, h){
 		this->x = x;
 		this->y = y;
 		this->box(blockType);

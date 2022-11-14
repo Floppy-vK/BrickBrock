@@ -2,13 +2,14 @@
 #define PADDLE_H_
 
 #include <FL/Fl_Box.H>
+#include "Block.h"
 
-class Paddle : public Fl_Box{
+class Paddle : public Block{
 private:
 	int num_blocks;
 
 public:
-	Paddle(int x, int y) : Fl_Box(x, y, 100, 20){
+	Paddle(int x, int y) : Block(x, y, 100, 20, FL_PLASTIC_UP_BOX, FL_BLUE){
 		this->num_blocks = 5;
 	}
 };

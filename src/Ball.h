@@ -3,7 +3,7 @@
 
 #include <FL/Fl_Box.H>
 
-class Ball : public Fl_Box {
+class Ball : public Fl_Box{
 private:
 	int xSpeed;
 	int ySpeed;
