@@ -5,6 +5,7 @@
 #include <FL/Fl_Window.H>
 #include "Ball.h"
 #include "Brick.h"
+#include "Bricks.h"
 #include "Paddle.h"
 
 
@@ -12,6 +13,7 @@ class GameWindow : public Fl_Window {
 private:
 	Ball *ball = new Ball(30,30);
 	Paddle *paddle = new Paddle(600,600);
+	Brick *brick = new Brick(20,20, 3);
 public:
 	GameWindow() : Fl_Window(100, 100, 1400, 700, "Canvas"){
 		Fl::add_timeout(0.5, animate, (void*)this);
@@ -25,12 +27,7 @@ public:
 
 void GameWindow::init_window(){
 	GameWindow *win = this;
-	for (int i = 50; i < 850; i=i+30){
-		for (int j = 50; j < 400; j=j+30){
-			Brick *bricks = new Brick(i, j, 3);
-			bricks->show();
-		}
-	}
+	this->brick->show();
 	this->paddle->show();
 	this->ball->show();
 	this->ball->setSpeed(3,1);
@@ -39,6 +36,7 @@ void GameWindow::init_window(){
 
 bool GameWindow::isRunning(){
 	this->ball->move();
+	redraw();
 	return true;
 }
 
@@ -49,4 +47,4 @@ void GameWindow::animate(void *userdata){
 	}
 }
 
-#endif
+#endif /* GAMEWINDOW_H_ */

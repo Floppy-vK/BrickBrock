@@ -11,5 +11,6 @@ using namespace std;
 
 int main(){
 	GameWindow *win = new GameWindow();
+	win->show();
 	return (Fl::run());
 }

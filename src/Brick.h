@@ -15,9 +15,14 @@ public:
 			this->label("3");
 		}
 	}
+
+	Brick() : Block(0, 0, 20, 20, FL_NO_BOX, FL_YELLOW){
+		this->hitPoints = 3;
+		this->label("3");
+	}
 };
 
 
 
 
-#endif
+#endif /* BRICK_H_ */

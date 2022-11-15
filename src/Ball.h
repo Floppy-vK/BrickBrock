@@ -5,6 +5,10 @@
 
 class Ball : public Fl_Box{
 private:
+	int min_x = 0;
+	int max_x = 1400;
+	int min_y = 0;
+	int max_y = 700;
 	int xSpeed;
 	int ySpeed;
 public:
