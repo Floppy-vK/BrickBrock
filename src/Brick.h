@@ -14,9 +14,7 @@ public:
 		this->color(FL_YELLOW);
 		this->hitPoints = hitPoints;
 		this->labelfont(1);
-		if (hitPoints == 3){
-			this->label("3");
-		}
+		this->updateLabel();
 	}
 
 	/*
@@ -36,15 +34,38 @@ public:
 	*/
 
 	void takeDamage();
+	bool getIsAlive();
+	void updateLabel();
 };
 
 void Brick::takeDamage(){
 	this->hitPoints--;
+	this->updateLabel();
 	if (hitPoints <= 0){
 		this->isAlive = false;
 	}
 }
 
+bool Brick::getIsAlive(){
+	return isAlive;
+}
+
+void Brick::updateLabel(){
+	if (hitPoints <= 0){
+		this->isAlive = false;
+	}
+	if (this->hitPoints == 2){
+		this->label("2");
+	}
+	if (this->hitPoints == 1){
+		this->label("1");
+	}
+	if (this->hitPoints <= 0){
+		this->label("");
+		this->isAlive = false;
+		this->box(FL_NO_BOX);
+	}
+}
 
 
 #endif /* BRICK_H_ */

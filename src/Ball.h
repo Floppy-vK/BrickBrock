@@ -5,11 +5,13 @@
 #include "Paddle.h"
 #include "Bricks.h"
 #include "Brick.h"
+#include <math.h>
 #include <vector>
 using namespace std;
 
-//structure to save coordinates
-struct coord{
+
+//structure to save collision points of ball
+struct c_point{
 	int x;
 	int y;
 	char direction;
@@ -28,8 +30,8 @@ private:
 	bool isAlive = true;
 	bool bouncedPaddle = false;
 
-	vector<coord> cardinals;
-	vector<coord> diagonals;
+	vector<c_point> cardinals;
+	vector<c_point> diagonals;
 
 
 public:
@@ -59,13 +61,16 @@ public:
 	//sets new collision point locations
 	void setNewCPoints();
 
-	//checks for collision
+	//checks for collision using ball's collision points
 	void checkCollision(Paddle *paddle, Bricks *bricks);
 
-	//checks collision for coordinates given
-	//void checkOverlap(coord);
+	bool bounce(Paddle *paddle, Brick *brick);
 
+	//sets speed accordingly to angle
 	void bounceAngle(char name);
+
+	//calculate distance to brick
+	//int distanceToBrick(Brick *brick);
 };
 
 
@@ -115,50 +120,51 @@ void Ball::checkWallBounce(){
 
 void Ball::setNewCPoints(){
 	int margin = 1;
-	//names are as the letters on keyboard centered around s key
+
+	//direction component of c_point is assigned using keys around s on keyboard as reference:
 	// q w e
-	// a s d
+	// a . d
 	// z x c
 
-	//cardinal point north
+	//cardinal c_point north
 	this->cardinals.at(0).x = this->x() + this->diameter/2;
 	this->cardinals.at(0).y = this->y() - margin;
-	this->cardinals.at(0).direction = 'v';
+	this->cardinals.at(0).direction = 'w';
 
-	//cardinal point east
+	//cardinal c_point east
 	this->cardinals.at(1).x = this->x() + this->diameter + margin;
 	this->cardinals.at(1).y = this->y() + this->diameter/2;
-	this->cardinals.at(1).direction = 'h';
+	this->cardinals.at(1).direction = 'd';
 
-	//cardinal point south
+	//cardinal c_point south
 	this->cardinals.at(2).x = this->x() + this->diameter/2;
 	this->cardinals.at(2).y = this->y() + this->diameter + margin;
-	this->cardinals.at(2).direction = 'v';
+	this->cardinals.at(2).direction = 'x';
 
-	//cardinal point west
+	//cardinal c_point west
 	this->cardinals.at(3).x = this->x() - margin;
 	this->cardinals.at(3).y = this->y() + this->diameter/2;
-	this->cardinals.at(3).direction = 'h';
+	this->cardinals.at(3).direction = 'a';
 
-	//diagonal point top-left
+	//diagonal c_point top-left
 	this->diagonals.at(0).x = this->x() + 0.15*diameter - margin;
 	this->diagonals.at(0).y = this->y() + 0.15*diameter - margin;
-	this->diagonals.at(0).direction = 'd';
+	this->diagonals.at(0).direction = 'q';
 
-	//diagonal point top-right
+	//diagonal c_point top-right
 	this->diagonals.at(1).x = this->x() + 0.85*diameter + margin;
 	this->diagonals.at(1).y = this->y() + 0.15*diameter - margin;
-	this->diagonals.at(1).direction = 'd';
+	this->diagonals.at(1).direction = 'e';
 
-	//diagonal point bottom-right
+	//diagonal c_point bottom-right
 	this->diagonals.at(2).x = this->x() + 0.85*diameter + margin;
 	this->diagonals.at(2).y = this->y() + 0.85*diameter + margin;
-	this->diagonals.at(2).direction = 'd';
+	this->diagonals.at(2).direction = 'c';
 
-	//diagonal point bottom-left
+	//diagonal c_point bottom-left
 	this->diagonals.at(3).x = this->x() + 0.15*diameter - margin;
 	this->diagonals.at(3).y = this->y() + 0.85*diameter + margin;
-	this->diagonals.at(3).direction = 'd';
+	this->diagonals.at(3).direction = 'z';
 }
 
 void Ball::checkCollision(Paddle *paddle, Bricks *bricks){
@@ -168,55 +174,96 @@ void Ball::checkCollision(Paddle *paddle, Bricks *bricks){
 
 	//paddle collision check
 	if (not this->bouncedPaddle){
-		for (coord c : this->cardinals){
-			if (c.y >= paddle->y() and c.y <= paddle->y() + paddle->h()){
-				if (c.x >= paddle->x() and c.x <= paddle->x() + paddle->w()){
-					//check direction for bounce
-					this->bounceAngle(c.direction);
-					this->bouncedPaddle = true;
-				}
+		this->bouncedPaddle = this->bounce(paddle, NULL);
+	}
+	//ADD DIFFERENT ANGLED BOUNCE FOR FRONT AND BACK END OF PADDLE
+
+	//Brick collision
+	if (this->y() < 300){
+		for (Brick *brick : bricks->getBricks()){
+			if (bounce(NULL, brick)){
+				brick->takeDamage();
+				break;
 			}
 		}
-	}
-
-	if (not this->bouncedPaddle){
-		for (coord c : this->diagonals){
-			if (c.x >= paddle->x() and c.x <= paddle->x() + paddle->w()){
-				if (c.y >= paddle->y() and c.y <= paddle->y() + paddle->h()){
-					//check direction for bounce
-					this->bounceAngle(c.direction);
-					this->bouncedPaddle = true;
-				}
-			}
-		}
-	}
-
-	else if (this->y() >= 240){
-
 	}
 }
 
 /*
-void Ball::checkOverlap(coord){
+void Ball::checkOverlap(c_point){
 
 }
 */
 
-void Ball::bounceAngle(char direction){ // ADD CORRECT ANGLES FOR NAMES OF POINTS
+bool Ball::bounce(Paddle *paddle, Brick *brick){
+	Fl_Box *object;
+	if (paddle != NULL){
+		object = paddle;
+	}
+	else if (brick != NULL){
+		object = brick;
+	}
+	for (c_point c : this->cardinals){
+		if (c.y >= object->y() and c.y <= object->y() + object->h()){
+			if (c.x >= object->x() and c.x <= object->x() + object->w()){
+				//set direction for bounce
+				this->bounceAngle(c.direction);
+				return true;
+			}
+		}
+	}
+
+	for (c_point c : this->diagonals){
+		if (c.y >= object->y() and c.y <= object->y() + object->h()){
+			if (c.x >= object->x() and c.x <= object->x() + object->w()){
+				//set direction for bounce
+				this->bounceAngle(c.direction);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void Ball::bounceAngle(char direction){
+	//brute force ensuring ball bounces in correct direction
+	if (direction == 'q'){
+		this->xSpeed = abs(this->xSpeed);
+		this->ySpeed = abs(this->ySpeed);
+	}
+	if (direction == 'w'){
+		this->ySpeed = abs(this->ySpeed);
+	}
+	if (direction == 'e'){
+		this->xSpeed = abs(this->xSpeed) * -1;
+		this->ySpeed = abs(this->ySpeed);
+	}
 	if (direction == 'd'){
-		this->bounceVertical();
-		this->bounceHorizontal();
+		this->xSpeed = abs(this->ySpeed) * -1;
 	}
-
-	else if (direction == 'v'){
-		this->bounceVertical();
+	if (direction == 'c'){
+		this->xSpeed = abs(this->xSpeed) * -1;
+		this->ySpeed = abs(this->ySpeed) * -1;
 	}
-
-	else if (direction == 'h'){
-		this->bounceHorizontal();
+	if (direction == 'x'){
+		this->ySpeed = abs(this->ySpeed) * -1;
+	}
+	if (direction == 'z'){
+		this->xSpeed = abs(this->xSpeed);
+		this->ySpeed = abs(this->ySpeed) * -1;
+	}
+	if (direction == 'a'){
+		this->xSpeed = abs(this->xSpeed);
 	}
 }
 
-
-
+/*
+int Ball::distanceToBrick(Brick *brick){
+	int distance;
+	double x_diff = double(this->x() + (this->diameter/2) - brick->x() + (brick->w()/2));
+	double y_diff = double(this->y() + (this->diameter/2) - brick->y() + (brick->h()/2));
+	distance = sqrt(pow(x_diff,2) + pow(y_diff,2));
+	return distance;
+}
+*/
 #endif /* BALL_H_ */
