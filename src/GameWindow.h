@@ -11,13 +11,14 @@
 
 class GameWindow : public Fl_Window {
 private:
-	Ball *ball = new Ball(30,30);
-	Paddle *paddle = new Paddle(600,600);
-	Brick *brick = new Brick(20,20, 3);
+	Ball *ball = new Ball(30, 210);
+	Paddle *paddle = new Paddle(260, 460, 120, 20);
+	Bricks *bricks = new Bricks(13, 3);
 public:
-	GameWindow() : Fl_Window(100, 100, 1400, 700, "Canvas"){
+	GameWindow() : Fl_Window(100, 100, 640, 480, "Canvas"){
 		Fl::add_timeout(0.5, animate, (void*)this);
 		this->init_window();
+
 	}
 
 	bool isRunning();
@@ -27,23 +28,33 @@ public:
 
 void GameWindow::init_window(){
 	GameWindow *win = this;
-	this->brick->show();
+	this->bricks->show_all();
 	this->paddle->show();
 	this->ball->show();
-	this->ball->setSpeed(3,1);
+	this->ball->setSpeed(3,2);
+	Fl::set_color(FL_DARK1, 42, 52, 57);
+	win->color(FL_DARK1);
 	win->show();
 }
 
 bool GameWindow::isRunning(){
-	this->ball->move();
-	redraw();
-	return true;
+	if (Fl::event_key(FL_Right)){
+		this->paddle->moveRight();
+	}
+	if (Fl::event_key(FL_Left)){
+			this->paddle->moveLeft();
+		}
+	this->ball->checkCollision(paddle, bricks);
+	return this->ball->move();
 }
 
 void GameWindow::animate(void *userdata){
 	GameWindow *w = (GameWindow *)userdata;
 	if (w->isRunning()){
 		Fl::repeat_timeout(0.025, animate, userdata);
+	}
+	else{
+		//Display GAME OVER screen
 	}
 }
 
