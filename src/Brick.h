@@ -11,10 +11,9 @@ private:
 public:
 	Brick(int x, int y, int width, int height, int hitPoints) : Fl_Box(x, y, width, height){
 		this->box(FL_THIN_UP_BOX);
-		this->color(FL_YELLOW);
+		this->color(FL_GREEN);
 		this->hitPoints = hitPoints;
-		this->labelfont(1);
-		this->updateLabel();
+		this->updateBrick();
 	}
 
 	/*
@@ -35,12 +34,12 @@ public:
 
 	void takeDamage();
 	bool getIsAlive();
-	void updateLabel();
+	void updateBrick();
 };
 
 void Brick::takeDamage(){
 	this->hitPoints--;
-	this->updateLabel();
+	this->updateBrick();
 	if (hitPoints <= 0){
 		this->isAlive = false;
 	}
@@ -50,15 +49,15 @@ bool Brick::getIsAlive(){
 	return isAlive;
 }
 
-void Brick::updateLabel(){
+void Brick::updateBrick(){
 	if (hitPoints <= 0){
 		this->isAlive = false;
 	}
 	if (this->hitPoints == 2){
-		this->label("2");
+		this->color(FL_YELLOW);
 	}
 	if (this->hitPoints == 1){
-		this->label("1");
+		this->color(FL_RED);
 	}
 	if (this->hitPoints <= 0){
 		this->label("");
