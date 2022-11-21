@@ -2,6 +2,10 @@
 #define BRICK_H_
 
 #include <FL/Fl_Box.H>
+#include "Bricks.h"
+#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
 
 class Brick : public Fl_Box{
 private:
@@ -16,32 +20,23 @@ public:
 		this->updateBrick();
 	}
 
-	/*
-	Brick() : Fl_Box(0, 0, 40, 40){
-		this->x = 0;
-		this->y = 0;
-		this->width = 40;
-		this->height = 40;
-		this->box(FL_THIN_UP_BOX);
-		this->color(FL_YELLOW);
-		this->hitPoints = hitPoints;
-		this->labelfont(1);
-		if (hitPoints == 3){
-			this->label("3");
-		}
-	}
-	*/
-
-	void takeDamage();
+	void takeDamage(Bricks* bricks);
 	bool getIsAlive();
 	void updateBrick();
 };
 
-void Brick::takeDamage(){
+void Brick::takeDamage(Bricks* bricks){
 	this->hitPoints--;
 	this->updateBrick();
 	if (hitPoints <= 0){
-		this->isAlive = false;
+		//delete brick from bricks
+		vector<Brick*>::iterator new_end;
+		if (bricks->getBricks().back() == this){
+			bricks->getBricks().pop_back();
+		}
+		else{
+			new_end = remove(bricks->getBricks().begin(), bricks->getBricks().end(), this);
+		}
 	}
 }
 

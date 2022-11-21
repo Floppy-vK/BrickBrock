@@ -182,7 +182,7 @@ void Ball::checkCollision(Paddle *paddle, Bricks *bricks){
 	if (this->y() < 300){
 		for (Brick *brick : bricks->getBricks()){
 			if (bounce(NULL, brick)){
-				brick->takeDamage();
+				brick->takeDamage(bricks);
 				break;
 			}
 		}
