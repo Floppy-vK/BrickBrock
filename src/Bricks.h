@@ -73,7 +73,16 @@ void Bricks::deleteBrick(){
 	for (Brick *brick : this->bricks){
 		if (not brick->getIsAlive()){
 			vector<Brick*>::iterator new_end;
-			new_end = remove(this->bricks.begin(), this->bricks.end(), brick);
+			//if (this->bricks.front() == brick){
+			// second element becomes first element
+			//}
+			if (this->bricks.back() == brick){
+				this->bricks.pop_back();
+			}
+			else{
+				new_end = remove(this->bricks.begin(), this->bricks.end(), brick);
+			}
+
 		}
 	}
 }

@@ -230,30 +230,38 @@ void Ball::bounceAngle(char direction){
 	if (direction == 'q'){
 		this->xSpeed = abs(this->xSpeed);
 		this->ySpeed = abs(this->ySpeed);
+		return;
 	}
 	if (direction == 'w'){
 		this->ySpeed = abs(this->ySpeed);
+		return;
 	}
 	if (direction == 'e'){
 		this->xSpeed = abs(this->xSpeed) * -1;
 		this->ySpeed = abs(this->ySpeed);
+		return;
 	}
 	if (direction == 'd'){
 		this->xSpeed = abs(this->ySpeed) * -1;
+		return;
 	}
 	if (direction == 'c'){
 		this->xSpeed = abs(this->xSpeed) * -1;
 		this->ySpeed = abs(this->ySpeed) * -1;
+		return;
 	}
 	if (direction == 'x'){
 		this->ySpeed = abs(this->ySpeed) * -1;
+		return;
 	}
 	if (direction == 'z'){
 		this->xSpeed = abs(this->xSpeed);
 		this->ySpeed = abs(this->ySpeed) * -1;
+		return;
 	}
 	if (direction == 'a'){
 		this->xSpeed = abs(this->xSpeed);
+		return;
 	}
 }
 

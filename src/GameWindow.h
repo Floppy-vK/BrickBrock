@@ -22,7 +22,7 @@ public:
 	}
 
 	bool isRunning();
-	static void animate(void *userdata);
+	static void animate(void *windowData);
 	void init_window();
 };
 
@@ -49,10 +49,10 @@ bool GameWindow::isRunning(){
 	return this->ball->move();
 }
 
-void GameWindow::animate(void *userdata){
-	GameWindow *w = (GameWindow *)userdata;
+void GameWindow::animate(void *windowData){
+	GameWindow *w = (GameWindow *)windowData;
 	if (w->isRunning()){
-		Fl::repeat_timeout(0.025, animate, userdata);
+		Fl::repeat_timeout(0.025, animate, windowData);
 	}
 	else{
 		//Display GAME OVER screen
