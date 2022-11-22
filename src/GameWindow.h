@@ -50,8 +50,8 @@ bool GameWindow::isRunning(){
 }
 
 void GameWindow::animate(void *windowData){
-	GameWindow *w = (GameWindow *)windowData;
-	if (w->isRunning()){
+	GameWindow *window = (GameWindow *)windowData;
+	if (window->isRunning()){
 		Fl::repeat_timeout(0.025, animate, windowData);
 	}
 	else{
