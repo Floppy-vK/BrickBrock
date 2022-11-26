@@ -31,7 +31,7 @@ void GameWindow::init_window(){
 	this->bricks->showAll();
 	this->paddle->show();
 	this->ball->show();
-	this->ball->setSpeed(4,3);
+	this->ball->setSpeed(4,4);
 	Fl::set_color(FL_DARK1, 42, 52, 57);
 	win->color(FL_DARK1);
 	win->show();

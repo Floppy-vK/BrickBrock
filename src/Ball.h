@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include <math.h>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 
@@ -15,6 +16,11 @@ struct c_point{
 	int x;
 	int y;
 	char direction;
+};
+
+struct speed_vector{
+	int v_x;
+	int v_y;
 };
 
 class Ball : public Fl_Box{
@@ -27,12 +33,14 @@ private:
 	int ySpeed;
 	int diameter;
 
+	int x_speeds[9] = {6, 5, 4, 2, 0,-2,-4,-5,-6};
+	int y_speeds[9] = {0, 2, 4, 5, 6, 5, 4, 2, 0};
+
 	bool isAlive = true;
 	bool bouncedPaddle = false;
 
 	vector<c_point> cardinals;
 	vector<c_point> diagonals;
-
 
 public:
 	Ball(int x, int y, int diameter = 20): Fl_Box(x, y, diameter, diameter){
@@ -45,7 +53,7 @@ public:
 		this->diagonals.resize(4);
 	}
 
-	void setSpeed(int xSpd, int ySpd);
+	void setSpeed(int v_x, int v_y);
 
 	bool move();
 
@@ -64,7 +72,11 @@ public:
 	//checks for collision using ball's collision points
 	void checkCollision(Paddle *paddle, Bricks *bricks);
 
-	bool bounce(Paddle *paddle, Brick *brick);
+	c_point checkOverlapPoints(vector<c_point> points, Fl_Box *object);
+
+	bool bounceBrick(Brick *brick);
+
+	bool bouncePaddle(Paddle *paddle);
 
 	//sets speed accordingly to angle
 	void bounceAngle(char name);
@@ -76,10 +88,11 @@ public:
 
 //Function definitions
 
-void Ball::setSpeed(int xSpd, int ySpd){
-	this->xSpeed = xSpd;
-	this->ySpeed = ySpd;
+void Ball::setSpeed(int v_x, int v_y){
+	this->xSpeed = v_x;
+	this->ySpeed = v_y;
 }
+
 
 bool Ball::move(){
 	//NEED TO CHECK FOR COLLISION IF MOVED ------------------------------------
@@ -168,20 +181,20 @@ void Ball::setNewCPoints(){
 }
 
 void Ball::checkCollision(Paddle *paddle, Bricks *bricks){
-	if (this->y() < 480 - paddle->h() - this->diameter){
+	int margin = this->diameter + 5;
+	if (this->y() + margin < paddle->y() or this->x() + margin < paddle->x() or this->x() > paddle->x() + paddle->w() + 5){
 		this->bouncedPaddle = false;
 	}
 
 	//paddle collision check
 	if (not this->bouncedPaddle){
-		this->bouncedPaddle = this->bounce(paddle, NULL);
+		this->bouncedPaddle = this->bouncePaddle(paddle);
 	}
-	//ADD DIFFERENT ANGLED BOUNCE FOR FRONT AND BACK END OF PADDLE
 
-	//Brick collision
+	//Brick collision check
 	if (this->y() < 300){
 		for (Brick *brick : bricks->getBricks()){
-			if (bounce(NULL, brick)){
+			if (bounceBrick(brick)){
 				brick->takeDamage();
 				break;
 			}
@@ -189,39 +202,62 @@ void Ball::checkCollision(Paddle *paddle, Bricks *bricks){
 	}
 }
 
-/*
-void Ball::checkOverlap(c_point){
-
+c_point Ball::checkOverlapPoints(vector<c_point> points, Fl_Box *object){
+	c_point nullPoint;
+	nullPoint.direction = 'n';
+	for (c_point c : points){
+		if (c.y >= object->y() and c.y <= object->y() + object->h()){
+			if (c.x >= object->x() and c.x <= object->x() + object->w()){
+				return c;
+			}
+		}
+	}
+	return nullPoint;
 }
-*/
 
-bool Ball::bounce(Paddle *paddle, Brick *brick){
-	Fl_Box *object;
-	if (paddle != NULL){
-		object = paddle;
+bool Ball::bouncePaddle(Paddle *paddle){
+	c_point point = checkOverlapPoints(this->cardinals, paddle);
+	int index;
+
+	if (point.direction == 'n'){
+		point = checkOverlapPoints(this->diagonals, paddle);
 	}
-	else if (brick != NULL){
-		object = brick;
-	}
-	for (c_point c : this->cardinals){
-		if (c.y >= object->y() and c.y <= object->y() + object->h()){
-			if (c.x >= object->x() and c.x <= object->x() + object->w()){
-				//set direction for bounce
-				this->bounceAngle(c.direction);
-				return true;
+	if (point.direction != 'n'){
+		auto it = find(begin(this->x_speeds), end(this->x_speeds), this->xSpeed);
+		if (it != end(this->x_speeds)) {
+			index = distance(this->x_speeds, it);
+		}
+
+		if (point.x <= paddle->x() + 0.2 * paddle->w()){
+			index++;
+			if (index > 8){
+				index = 0;
 			}
 		}
-	}
-
-	for (c_point c : this->diagonals){
-		if (c.y >= object->y() and c.y <= object->y() + object->h()){
-			if (c.x >= object->x() and c.x <= object->x() + object->w()){
-				//set direction for bounce
-				this->bounceAngle(c.direction);
-				return true;
+		else if (point.x >= paddle->x() + 0.8 * paddle->w()){
+			index--;
+			if (index < 0){
+				index = 8;
 			}
 		}
+		this->setSpeed(this->x_speeds[index], this->y_speeds[index]);
+		this->bounceAngle(point.direction);
+		return true;
 	}
+	return false;
+}
+
+bool Ball::bounceBrick(Brick *brick){
+	c_point point = checkOverlapPoints(this->cardinals, brick);
+	if (point.direction == 'n'){
+		point = checkOverlapPoints(this->diagonals, brick);
+	}
+
+	if (point.direction != 'n'){
+		this->bounceAngle(point.direction);
+		return true;
+	}
+
 	return false;
 }
 
@@ -274,4 +310,5 @@ int Ball::distanceToBrick(Brick *brick){
 	return distance;
 }
 */
+
 #endif /* BALL_H_ */
