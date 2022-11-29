@@ -43,7 +43,17 @@ bool GameWindow::isRunning(){
 	}
 	if (Fl::event_key(FL_Left)){
 			this->paddle->moveLeft();
+	}
+
+	/* BRUTE FORCE TRACKING BALL
+	if (this->ball->x() < this->paddle->x()){
+		this->paddle->moveLeft();
+	}
+	if (this->ball->x()  > this->paddle->x()){
+			this->paddle->moveRight();
 		}
+	*/
+
 	this->ball->checkCollision(paddle, bricks);
 	this->bricks->deleteBrick();
 	return this->ball->move();
