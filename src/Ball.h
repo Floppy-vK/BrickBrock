@@ -1,5 +1,5 @@
-#ifndef BALL_H_
-#define BALL_H_
+#ifndef _BALL_H_
+#define _BALL_H_
 
 #include <FL/Fl_Box.H>
 #include "Paddle.h"
@@ -311,4 +311,4 @@ int Ball::distanceToBrick(Brick *brick){
 }
 */
 
-#endif /* BALL_H_ */
+#endif /* _BALL_H_ */

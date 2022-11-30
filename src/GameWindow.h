@@ -1,5 +1,5 @@
-#ifndef GAMEWINDOW_H_
-#define GAMEWINDOW_H_
+#ifndef _GAMEWINDOW_H_
+#define _GAMEWINDOW_H_
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
@@ -69,4 +69,4 @@ void GameWindow::animate(void *windowData){
 	}
 }
 
-#endif /* GAMEWINDOW_H_ */
+#endif /* _GAMEWINDOW_H_ */

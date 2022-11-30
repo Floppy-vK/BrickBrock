@@ -1,5 +1,5 @@
-#ifndef PADDLE_H_
-#define PADDLE_H_
+#ifndef _PADDLE_H_
+#define _PADDLE_H_
 
 #include <FL/Fl_Box.H>
 
@@ -56,4 +56,4 @@ void Paddle::move(){
 	direction = 0;
 }
 
-#endif /* PADDLE_H_ */
+#endif /* _PADDLE_H_ */

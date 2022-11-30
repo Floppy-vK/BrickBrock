@@ -1,5 +1,5 @@
-#ifndef BRICKS_H_
-#define BRICKS_H_
+#ifndef _BRICKS_H_
+#define _BRICKS_H_
 
 #include <FL/Fl.H>
 #include <FL/Fl_Box.H>
@@ -87,4 +87,4 @@ void Bricks::deleteBrick(){
 	}
 }
 
-#endif /* BRICKS_H_ */
+#endif /* _BRICKS_H_ */

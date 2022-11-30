@@ -1,5 +1,5 @@
-#ifndef BRICK_H_
-#define BRICK_H_
+#ifndef _BRICK_H_
+#define _BRICK_H_
 
 #include <FL/Fl_Box.H>
 
@@ -67,4 +67,4 @@ void Brick::updateBrick(){
 }
 
 
-#endif /* BRICK_H_ */
+#endif /* _BRICK_H_ */
