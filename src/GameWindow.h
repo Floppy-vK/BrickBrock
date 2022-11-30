@@ -7,13 +7,17 @@
 #include "Brick.h"
 #include "Bricks.h"
 #include "Paddle.h"
-
+#include "Scoreboard.h"
+#include <string>
+using namespace std;
 
 class GameWindow : public Fl_Window {
 private:
 	Ball *ball = new Ball(30, 210);
 	Paddle *paddle = new Paddle(260, 460, 120, 20);
 	Bricks *bricks = new Bricks(13, 3);
+	string *scoreText = new string("Score: 0");
+	Scoreboard *scoreboard = new Scoreboard(0,0, scoreText);
 public:
 	GameWindow() : Fl_Window(100, 100, 640, 480, "Canvas"){
 		Fl::add_timeout(0.5, animate, (void*)this);
@@ -32,6 +36,7 @@ void GameWindow::init_window(){
 	this->paddle->show();
 	this->ball->show();
 	this->ball->setSpeed(4,4);
+	this->scoreboard->show();
 	Fl::set_color(FL_DARK1, 42, 52, 57);
 	win->color(FL_DARK1);
 	win->show();
@@ -55,7 +60,9 @@ bool GameWindow::isRunning(){
 	*/
 
 	this->ball->checkCollision(paddle, bricks);
-	this->bricks->deleteBrick();
+	if(this->bricks->deleteBrick()){
+		this->scoreboard->addPoints(10);
+	}
 	return this->ball->move();
 }
 

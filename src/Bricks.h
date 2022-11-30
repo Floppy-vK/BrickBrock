@@ -12,7 +12,7 @@ using namespace std;
 class Bricks{
 private:
 	int x_start = 30; //change to appropriate value
-	int y_start = 30; //change to appropriate value
+	int y_start = 60; //change to appropriate value
 	int bricks_vert;
 	int bricks_horiz;
 	int brick_width = 40;
@@ -35,7 +35,7 @@ public:
 	vector<Brick*> getBricks();
 	void spreadBricks();
 	void showAll();
-	void deleteBrick();
+	bool deleteBrick();
 	bool getBrickAlive(Brick *brick);
 };
 
@@ -49,10 +49,10 @@ vector<Brick*> Bricks::getBricks(){
 
 void Bricks::spreadBricks(){
 	int index = 0;
-	for (int b_v = 0; b_v < this->bricks_vert; b_v++){
-		for (int b_h = 0; b_h < this->bricks_horiz; b_h++){
-			int brick_x_pos = this->x_start + b_h * (this->brick_width + this->padding);
-			int brick_y_pos = this->y_start + b_v * (this->brick_width + this->padding);
+	for (int bricksVertical = 0; bricksVertical < this->bricks_vert; bricksVertical++){
+		for (int bricksHorizontal = 0; bricksHorizontal < this->bricks_horiz; bricksHorizontal++){
+			int brick_x_pos = this->x_start + bricksHorizontal * (this->brick_width + this->padding);
+			int brick_y_pos = this->y_start + bricksVertical * (this->brick_width + this->padding);
 			bricks.at(index)->position(brick_x_pos, brick_y_pos);
 			index++;
 		}
@@ -69,7 +69,7 @@ bool Bricks::getBrickAlive(Brick *brick){
 	return not brick->getIsAlive();
 }
 
-void Bricks::deleteBrick(){
+bool Bricks::deleteBrick(){
 	for (Brick *brick : this->bricks){
 		if (not brick->getIsAlive()){
 			vector<Brick*>::iterator new_end;
@@ -82,9 +82,10 @@ void Bricks::deleteBrick(){
 			else{
 				new_end = remove(this->bricks.begin(), this->bricks.end(), brick);
 			}
-
+			return true;
 		}
 	}
+	return false;
 }
 
 #endif /* _BRICKS_H_ */
