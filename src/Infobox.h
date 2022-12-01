@@ -9,6 +9,7 @@ using namespace std;
 class Infobox : public Fl_Box {
 private:
 	int totalScore = 0;
+	double totalTime = 0;
 	string* labelText;
 public:
 	Infobox(int x, int y, int w, int h, string *labelText) : Fl_Box(x, y, w, h,(*labelText).c_str()){
@@ -19,10 +20,14 @@ public:
 	void init_box();
 	//for score box
 	void addPoints(int points);
-	void updateLabel();
+
 	int getScore();
 	//for end game box
-	void addTime(int time);
+	void addTime(double seconds);
+
+	int getTime();
+
+	void playerWin(bool win);
 
 };
 
@@ -42,9 +47,27 @@ int Infobox::getScore(){
 	return totalScore;
 }
 
-void Infobox::addTime(int time){
+void Infobox::addTime(double seconds){
+	this->totalTime = this->totalTime + seconds;
 	string* text = this->labelText;
-	*text = "Time played: " + to_string(time);
+	*text = "Time: " + to_string(int(this->totalTime));
+}
+
+int Infobox::getTime(){
+	return int(this->totalTime);
+}
+
+void Infobox::playerWin(bool win){
+	string* text = this->labelText;
+	if (win){
+		*text = "YOU WIN!";
+
+	}
+
+	else {
+		*text = "GAME OVER";
+	}
+	this->show();
 }
 
 #endif /* _INFOBOX_H_ */
