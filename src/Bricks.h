@@ -11,21 +11,24 @@ using namespace std;
 
 class Bricks{
 private:
-	int x_start = 30; //change to appropriate value
-	int y_start = 60; //change to appropriate value
+	int x_start; //change to appropriate value
+	int y_start; //change to appropriate value
 	int bricks_vert;
 	int bricks_horiz;
 	int brick_width = 40;
 	int padding = 5;
 	vector<Brick*> bricks;
+
 public:
-	Bricks(int bricks_horiz, int bricks_vert){
+	Bricks(int x_start, int y_start, int bricks_horiz, int bricks_vert){
+		this->x_start = x_start;
+		this->y_start = y_start;
 		this->bricks_horiz = bricks_horiz;
 		this->bricks_vert = bricks_vert;
 
 		for (int h = 0; h < bricks_vert; h++){
 			for (int w = 0; w < bricks_horiz; w++){
-				bricks.push_back(new Brick(0,0,this->brick_width,this->brick_width,3));
+				bricks.push_back(new Brick(0,0,this->brick_width,this->brick_width,1));
 			}
 		}
 		this->spreadBricks();
@@ -37,6 +40,7 @@ public:
 	void showAll();
 	bool deleteBrick();
 	bool getBrickAlive(Brick *brick);
+	int getBlockCount();
 };
 
 Brick* Bricks::getBrick(int index){
@@ -86,6 +90,10 @@ bool Bricks::deleteBrick(){
 		}
 	}
 	return false;
+}
+
+int Bricks::getBlockCount(){
+	return this->bricks_horiz * this->bricks_vert;
 }
 
 #endif /* _BRICKS_H_ */
