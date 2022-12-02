@@ -18,11 +18,21 @@ private:
 	//paddle object
 	Paddle *paddle = new Paddle(260, 460, 120, 20);
 	//bricks object
-	Bricks *bricks = new Bricks(30, 60, 1, 1);
+	Bricks *bricks = new Bricks(30, 60, 13, 3);
+
+	Fl_Box *ceilingBox = new Fl_Box(0,0,640,30);
 
 	//score box
 	string *scoreText = new string("---Placeholder---");
 	Infobox *scoreBox = new Infobox(0,0, 100, 30,  scoreText);
+
+	//timer box
+	string *timerText = new string("--Placeholder--");
+	Infobox *timerBox = new Infobox(540, 0, 100, 30, timerText);
+
+	//lives box
+	string *livesText = new string("Lives: 3");
+	Infobox *livesBox = new Infobox(270, 0, 100, 30, livesText);
 
 	//"press enter to continue" box
 	Infobox *continueBox = new Infobox(220, 220, 200, 40, new string("You died!\nPress ENTER to continue"));
@@ -31,9 +41,6 @@ private:
 	string *endGameText = new string("--Placeholder--");
 	Infobox *endGameBox = new Infobox(270, 220, 100, 40, endGameText);
 
-	//end game box
-	string *timerText = new string("--Placeholder--");
-	Infobox *timerBox = new Infobox(540, 0, 100, 30, timerText);
 
 	//maximum achievable score
 	int max_score;
@@ -54,9 +61,12 @@ public:
 	static void animate(void *windowData);
 	void init_window();
 	void showEndGameBox();
+	void waitForInput(int keyCode);
 };
 
 void GameWindow::init_window(){
+	Fl::set_color(FL_DARK1, 42, 52, 57);
+	Fl::set_color(FL_DARK2, 31, 38, 42);
 	//show bricks
 	this->bricks->showAll();
 	//show paddle
@@ -64,16 +74,20 @@ void GameWindow::init_window(){
 	//show ball and set initial speed
 	this->ball->show();
 	this->ball->setSpeed(4,4);
+	//set up ceiling box
+	this->ceilingBox->box(FL_UP_BOX);
+	this->ceilingBox->color(FL_DARK2);
 	//show score box by adding 0 to score
 	this->scoreBox->addPoints(0);
 	//show timer by adding 0 to time
 	this->timerBox->addTime(0);
+	//show lives box
+	this->livesBox->show();
 	//hide pop-up box
 	this->continueBox->hide();
 	//hide end of game pop-up box
 	this->endGameBox->hide();
 	//set background color of window
-	Fl::set_color(FL_DARK1, 42, 52, 57);
 	this->color(FL_DARK1);
 	this->show();
 }
@@ -88,15 +102,13 @@ bool GameWindow::isRunning(){
 		this->paddle->moveLeft();
 	}
 
-	/*
-	//BRUTE FORCE TRACKING BALL
-	if (this->ball->x() < this->paddle->x() + this->paddle->w()/2){
+	//brute force tracking of ball
+	if (this->ball->x() + this->ball->w()/2 < this->paddle->x() + this->paddle->w()/2 - 10){
 		this->paddle->moveLeft();
 	}
-	else if (this->ball->x()  > this->paddle->x() + this->paddle->w()/2 - this->ball->w()){
+	else if (this->ball->x() > this->paddle->x() + this->paddle->w()/2 - this->ball->w()/2 + 10){
 			this->paddle->moveRight();
 		}
-	*/
 
 	//check collision of ball with paddle and bricks
 	this->ball->checkCollision(paddle, bricks);
@@ -115,20 +127,24 @@ void GameWindow::animate(void *windowData){
 	//check if player has broken all bricks
 	if (window->scoreBox->getScore() >= window->max_score){
 		window->endGameBox->playerWin(true);
+		window->waitForInput(FL_Enter);
+		window->hide();
 	}
 	//check if ball is alive, check for collisions, check whether bricks need to be deleted
 	else if (window->isRunning()){
 		window->timerBox->addTime(0.025);
 		Fl::repeat_timeout(0.025, animate, windowData);
 	}
-	//check if player has lives, if so, wait for ENTER key
+	//check if player has lives, if so, wait for ENTER key and display continue box
 	else if(window->lives > 0){
+		//show continue box and decrease lives by one
 		window->continueBox->show();
 		window->lives--;
-		while (not Fl::event_key(FL_Enter)){
-			Fl::wait();
-			continue;
-		}
+		//change value for lives box
+		string* livesPointer = window->livesText;
+		*livesPointer = "Lives: " + to_string(window->lives);
+		//wait till player presses enter
+		window->waitForInput(FL_Enter);
 		//reset ball
 		window->ball->position(30,210);
 		window->ball->setSpeed(4,4);
@@ -143,7 +159,18 @@ void GameWindow::animate(void *windowData){
 	//if no more lives left and ball dies, player loses
 	else{
 		window->endGameBox->playerWin(false);
+		window->waitForInput(FL_Enter);
+		window->hide();
 	}
+}
+
+//wait for specified key-input
+void GameWindow::waitForInput(int keyCode){
+	while (not Fl::event_key(keyCode)){
+		Fl::wait();
+		continue;
+	}
+	return;
 }
 
 #endif /* _GAMEWINDOW_H_ */

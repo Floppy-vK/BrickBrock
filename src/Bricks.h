@@ -28,7 +28,14 @@ public:
 
 		for (int h = 0; h < bricks_vert; h++){
 			for (int w = 0; w < bricks_horiz; w++){
-				bricks.push_back(new Brick(0,0,this->brick_width,this->brick_width,1));
+				int integrity = 10;
+				if (h == 1){
+					integrity = 5;
+				}
+				else if (h == 2){
+					integrity = 2;
+				}
+				bricks.push_back(new Brick(0,0,this->brick_width,this->brick_width,integrity));
 			}
 		}
 		this->spreadBricks();

@@ -63,7 +63,6 @@ void Infobox::playerWin(bool win){
 		*text = "YOU WIN!";
 
 	}
-
 	else {
 		*text = "GAME OVER";
 	}

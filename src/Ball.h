@@ -27,7 +27,7 @@ class Ball : public Fl_Box{
 private:
 	int min_x = 0;
 	int max_x = 640;
-	int min_y = 0;
+	int min_y = 30;
 	int max_y = 480;
 	int x_speed;
 	int y_speed;
@@ -126,13 +126,16 @@ void Ball::bounceVertical(){
 }
 
 void Ball::checkWallBounce(){
-	if (this->x() >= this->max_x - this->diameter or this->x() <= this->min_x){
-			this->bounceHorizontal();
+	if (this->x() >= this->max_x - this->diameter){
+			this->x_speed = abs(this->x_speed)*-1;
 	}
+	else if (this->x() <= this->min_x){
+				this->x_speed = abs(this->x_speed);
+		}
 	if (this->y() <= this->min_y){
-			this->bounceVertical();
+			this->y_speed = abs(this->y_speed);
 	}
-	if (this->y() >= this->max_y - this->diameter){
+	else if (this->y() >= this->max_y - this->diameter){
 		this->isAlive = false;
 	}
 }
@@ -275,34 +278,34 @@ void Ball::bounceAngle(char signifier){
 		this->y_speed = abs(this->y_speed);
 		return;
 	}
-	if (signifier == 'w'){
+	else if (signifier == 'w'){
 		this->y_speed = abs(this->y_speed);
 		return;
 	}
-	if (signifier == 'e'){
+	else if (signifier == 'e'){
 		this->x_speed = abs(this->x_speed) * -1;
 		this->y_speed = abs(this->y_speed);
 		return;
 	}
-	if (signifier == 'd'){
+	else if (signifier == 'd'){
 		this->x_speed = abs(this->y_speed) * -1;
 		return;
 	}
-	if (signifier == 'c'){
+	else if (signifier == 'c'){
 		this->x_speed = abs(this->x_speed) * -1;
 		this->y_speed = abs(this->y_speed) * -1;
 		return;
 	}
-	if (signifier == 'x'){
+	else if (signifier == 'x'){
 		this->y_speed = abs(this->y_speed) * -1;
 		return;
 	}
-	if (signifier == 'z'){
+	else if (signifier == 'z'){
 		this->x_speed = abs(this->x_speed);
 		this->y_speed = abs(this->y_speed) * -1;
 		return;
 	}
-	if (signifier == 'a'){
+	else if (signifier == 'a'){
 		this->x_speed = abs(this->x_speed);
 		return;
 	}
