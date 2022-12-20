@@ -18,6 +18,7 @@ private:
 	int brick_width = 40;
 	int padding = 5;
 	vector<Brick*> bricks;
+	int brickCount = 0;
 
 public:
 	Bricks(int x_start, int y_start, int bricks_horiz, int bricks_vert){
@@ -38,16 +39,23 @@ public:
 				bricks.push_back(new Brick(0,0,this->brick_width,this->brick_width,integrity));
 			}
 		}
+		this->brickCount = bricks_horiz * bricks_vert;
 		this->spreadBricks();
 	}
 
 	Brick* getBrick(int index);
+
 	vector<Brick*> getBricks();
+
 	void spreadBricks();
+
 	void showAll();
+
 	bool deleteBrick();
-	bool getBrickAlive(Brick *brick);
-	int getBlockCount();
+
+	int getBrickCount();
+
+	int getMaxBricks();
 };
 
 Brick* Bricks::getBrick(int index){
@@ -76,19 +84,16 @@ void Bricks::showAll(){
 	}
 }
 
-bool Bricks::getBrickAlive(Brick *brick){
-	return not brick->getIsAlive();
-}
 
 bool Bricks::deleteBrick(){
 	for (Brick *brick : this->bricks){
-		if (not brick->getIsAlive()){
+		if (brick->getIsAlive() == false){
+			this->brickCount--;
+
 			vector<Brick*>::iterator new_end;
-			//if (this->bricks.front() == brick){
-			// second element becomes first element
-			//}
+
 			if (this->bricks.back() == brick){
-				this->bricks.pop_back();
+				this->bricks.resize(this->brickCount);
 			}
 			else{
 				new_end = remove(this->bricks.begin(), this->bricks.end(), brick);
@@ -99,7 +104,11 @@ bool Bricks::deleteBrick(){
 	return false;
 }
 
-int Bricks::getBlockCount(){
+int Bricks::getBrickCount(){
+	return this->brickCount;
+}
+
+int Bricks::getMaxBricks(){
 	return this->bricks_horiz * this->bricks_vert;
 }
 

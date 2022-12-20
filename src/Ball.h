@@ -18,11 +18,6 @@ struct c_point{
 	char signifier;
 };
 
-struct speed_vector{
-	int x_speed;
-	int y_speed;
-};
-
 class Ball : public Fl_Box{
 private:
 	int min_x = 0;
@@ -33,12 +28,14 @@ private:
 	int y_speed;
 	int diameter;
 
+	//pre-determined x/y speed combinations with approximately appropriate angles: 0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, and 180 degrees respectively.
 	int x_speeds[9] = {6, 5, 4, 2, 0,-2,-4,-5,-6};
 	int y_speeds[9] = {0, 2, 4, 5, 6, 5, 4, 2, 0};
 
 	bool isAlive = true;
 	bool bouncedPaddle = false;
 
+	//vectors of collision points
 	vector<c_point> cardinals;
 	vector<c_point> diagonals;
 
@@ -53,17 +50,14 @@ public:
 		this->diagonals.resize(4);
 	}
 
+	//sets speed of ball
 	void setSpeed(int x_speed, int y_speed);
 
+	//repositions ball
 	bool move();
 
+	//sets alive state of ball
 	void setAlive(bool alive);
-
-	//if ball hits object in x signifier
-	void bounceHorizontal();
-
-	//if ball hits object in y signifier
-	void bounceVertical();
 
 	//checks if the ball must bounce against walls
 	void checkWallBounce();
@@ -74,30 +68,31 @@ public:
 	//checks for collision using ball's collision points
 	void checkCollision(Paddle *paddle, Bricks *bricks);
 
+	//checks if points overlap with given object
 	c_point checkOverlapPoints(vector<c_point> points, Fl_Box *object);
 
+	//checks if ball should bounce off a brick
 	bool bounceBrick(Brick *brick);
 
+	//checks if ball should bounce off of paddle
 	bool bouncePaddle(Paddle *paddle);
 
 	//sets speed accordingly to angle
 	void bounceAngle(char name);
 
-	//calculate distance to brick
-	//int distanceToBrick(Brick *brick);
+	//return bouncedPaddle boolean
+	bool getBouncedPaddle();
+
 };
 
-
-//Function definitions
-
+//sets speed of ball
 void Ball::setSpeed(int x_speed, int y_speed){
 	this->x_speed = x_speed;
 	this->y_speed = y_speed;
 }
 
-
+//checks for collision with wall, if no collision, move ball normally, set new locations for collision points
 bool Ball::move(){
-	//NEED TO CHECK FOR COLLISION IF MOVED ------------------------------------
 	this->hide();
 	int new_x;
 	int new_y;
@@ -108,23 +103,19 @@ bool Ball::move(){
 	new_y = this->y() + this->y_speed;
 
 	this->position(new_x, new_y);
+	//sets new locations for collision points
 	this->setNewCPoints();
 	this->show();
 	return this->isAlive;
 }
 
+//sets isAlive state of ball
 void Ball::setAlive(bool alive){
 	this->isAlive = alive;
 }
 
-void Ball::bounceHorizontal(){
-	this->x_speed = -(x_speed);
-}
 
-void Ball::bounceVertical(){
-	this->y_speed = -(y_speed);
-}
-
+//checks if ball hits wall, if so, it bounces off
 void Ball::checkWallBounce(){
 	if (this->x() >= this->max_x - this->diameter){
 			this->x_speed = abs(this->x_speed)*-1;
@@ -140,10 +131,12 @@ void Ball::checkWallBounce(){
 	}
 }
 
+//sets up collision points around circumference of ball, in eight positions. Each of the cardinal directions has a point, and in-between those are four diagonal points.
 void Ball::setNewCPoints(){
 	int margin = 1;
 	int radius = diameter/2;
 	int diameter = this->diameter;
+
 	//signifier component of c_point is assigned using keys around 's' key on keyboard as reference:
 	// q w e
 	// a . d
@@ -190,9 +183,12 @@ void Ball::setNewCPoints(){
 	this->diagonals.at(3).signifier = 'z';
 }
 
+//checks if ball collides/overlaps with paddle or bricks in current frame
 void Ball::checkCollision(Paddle *paddle, Bricks *bricks){
-	int margin = this->diameter + 5;
-	if (this->y() + margin < paddle->y() or this->x() + margin < paddle->x() or this->x() > paddle->x() + paddle->w() + 5){
+	int margin = this->diameter;
+
+	//ensures ball doesn't bounce twice on paddle in subsequent frames
+	if (this->y() + margin + 5 < paddle->y() or this->x() + margin < paddle->x() or this->x() > paddle->x() + paddle->w() + 5){
 		this->bouncedPaddle = false;
 	}
 
@@ -212,6 +208,7 @@ void Ball::checkCollision(Paddle *paddle, Bricks *bricks){
 	}
 }
 
+//checks for each point in vector if it overlaps with the given object's area. If a point overlaps, function returns said point, if none overlap, function return so-called nullPoint (signifier = 'n')
 c_point Ball::checkOverlapPoints(vector<c_point> points, Fl_Box *object){
 	c_point nullPoint;
 	nullPoint.signifier = 'n';
@@ -225,6 +222,7 @@ c_point Ball::checkOverlapPoints(vector<c_point> points, Fl_Box *object){
 	return nullPoint;
 }
 
+//checks whether ball overlaps with and should bounce off paddle in current frame, uses cardinal and diagonal collision points to check
 bool Ball::bouncePaddle(Paddle *paddle){
 	c_point point = checkOverlapPoints(this->cardinals, paddle);
 	int index;
@@ -238,16 +236,18 @@ bool Ball::bouncePaddle(Paddle *paddle){
 			index = distance(this->x_speeds, it);
 		}
 
+		//if ball bounces on first 20% of paddle, subtract 22.5 degrees from angle of bounce (using pre-determined speeds)
 		if (point.x <= paddle->x() + 0.2 * paddle->w()){
 			index++;
 			if (index > 8){
-				index = 0;
+				index = 8;
 			}
 		}
+		//if ball bounces on last 20% of paddle, add 22.5 degrees to angle of bounce (using pre-determined speeds)
 		else if (point.x >= paddle->x() + 0.8 * paddle->w()){
 			index--;
 			if (index < 0){
-				index = 8;
+				index = 0;
 			}
 		}
 		this->setSpeed(this->x_speeds[index], this->y_speeds[index]);
@@ -257,6 +257,7 @@ bool Ball::bouncePaddle(Paddle *paddle){
 	return false;
 }
 
+//check if ball overlaps with and should bounce off a brick in the current frame (is called for all bricks in window)
 bool Ball::bounceBrick(Brick *brick){
 	c_point point = checkOverlapPoints(this->cardinals, brick);
 	if (point.signifier == 'n'){
@@ -271,8 +272,8 @@ bool Ball::bounceBrick(Brick *brick){
 	return false;
 }
 
+//brute force ensuring ball bounces in correct direction
 void Ball::bounceAngle(char signifier){
-	//brute force ensuring ball bounces in correct direction
 	if (signifier == 'q'){
 		this->x_speed = abs(this->x_speed);
 		this->y_speed = abs(this->y_speed);
@@ -288,7 +289,7 @@ void Ball::bounceAngle(char signifier){
 		return;
 	}
 	else if (signifier == 'd'){
-		this->x_speed = abs(this->y_speed) * -1;
+		this->x_speed = abs(this->x_speed) * -1;
 		return;
 	}
 	else if (signifier == 'c'){
@@ -311,5 +312,8 @@ void Ball::bounceAngle(char signifier){
 	}
 }
 
+bool Ball::getBouncedPaddle(){
+	return this->bouncedPaddle;
+}
 
 #endif /* _BALL_H_ */

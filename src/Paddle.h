@@ -5,10 +5,7 @@
 
 class Paddle : public Fl_Box{
 private:
-	//ADD THREE INVISIBLE BLOCKS
-	//FRONT 20% IS ONE BLOCK, BACK 20% IS ONE BLOCK, MIDDLE IS ONE BLOCK
-	//BALL BOUNCE NORMAL ON MIDDLE, BOUNCE DIFFERENT ON FRONT AND BACK
-	int width = 120; // 5 blocks of 20x24 or 3 blocks, 1 x (72x20) + 2 x (24x20)
+	int width = 120;
 	int height = 20;
 	int max_x = 640;
 	int min_x = 0;

@@ -18,15 +18,16 @@ public:
 	}
 
 	void init_box();
+
 	//for score box
-	void addPoints(int points);
-
+	void setPoints(int points);
 	int getScore();
-	//for end game box
-	void addTime(double seconds);
 
+	//for timer box
+	void addTime(double seconds);
 	int getTime();
 
+	//for end of game box
 	void playerWin(bool win);
 
 };
@@ -37,8 +38,8 @@ void Infobox::init_box(){
 	this->color(FL_WHITE);
 }
 
-void Infobox::addPoints(int points){
-	this->totalScore = this->totalScore + points;
+void Infobox::setPoints(int points){
+	this->totalScore = points;
 	string* text = this->labelText;
 	*text = "Score: " + to_string(this->totalScore);
 }
