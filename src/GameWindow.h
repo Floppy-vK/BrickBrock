@@ -104,6 +104,8 @@ bool GameWindow::isRunning(){
 	}
 
 	//brute force tracking of ball
+
+	/*
 	if (not this->ball->getBouncedPaddle()){
 		if (this->ball->x() + this->ball->w()/2 < this->paddle->x() + this->paddle->w()/2 - 10){
 			this->paddle->moveLeft();
@@ -112,6 +114,7 @@ bool GameWindow::isRunning(){
 				this->paddle->moveRight();
 			}
 	}
+	*/
 
 	this->ball->checkCollision(paddle, bricks);
 
